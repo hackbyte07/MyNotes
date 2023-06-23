@@ -7,11 +7,13 @@ import SplashScreen from '../screens/SplashScreen';
 import BottomTabBarScreen from './BottomBarNavigation';
 import LoginScreen from '../screens/auth/LoginScreen';
 import SignupScreen from '../screens/auth/SignupScreen';
+import NotesScreen from '../screens/NotesScreen';
 
 type RootScreens = {
   LoginScreen: undefined;
   SignupScreen: undefined;
   BottomTabBarScreen: undefined;
+  NotesScreen: undefined;
 };
 
 const Stack = createStackNavigator<RootScreens>();
@@ -48,6 +50,13 @@ const RootNavigation = () => {
             />
             <Stack.Screen name="LoginScreen" component={LoginScreen} />
             <Stack.Screen name="SignupScreen" component={SignupScreen} />
+            <Stack.Group screenOptions={{headerShown: true}}>
+              <Stack.Screen
+                name="NotesScreen"
+                component={NotesScreen}
+                options={{title: 'Notes'}}
+              />
+            </Stack.Group>
           </Stack.Group>
         ) : (
           <Stack.Group screenOptions={{headerShown: false}}>
@@ -57,6 +66,13 @@ const RootNavigation = () => {
               name="BottomTabBarScreen"
               component={BottomTabBarScreen}
             />
+            <Stack.Group screenOptions={{headerShown: true}}>
+              <Stack.Screen
+                name="NotesScreen"
+                component={NotesScreen}
+                options={{title: 'Notes'}}
+              />
+            </Stack.Group>
           </Stack.Group>
         )}
       </Stack.Navigator>
