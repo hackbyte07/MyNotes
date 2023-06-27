@@ -1,30 +1,35 @@
-import {StyleSheet, Text, ToastAndroid, View} from 'react-native';
-import React, {useCallback, useEffect} from 'react';
+import {StyleSheet, ToastAndroid} from 'react-native';
+import React, {useEffect} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {TextInput} from 'react-native-gesture-handler';
 import {useState} from 'react';
 import {StackScreenProps} from '@react-navigation/stack';
 import {RootScreens} from '../navigation/RootNavigation';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import {useDispatch, useSelector} from 'react-redux';
-import {AppDispatch, createNotesSelector} from '../redux/store/store';
+import {useDispatch} from 'react-redux';
+import {AppDispatch} from '../redux/store/store';
 import {insertNote} from '../redux/slice/notesSlice';
+import {saveNoteFb} from '../firebase/firestore/notesDb';
 
 const NotesScreen = ({navigation}: StackScreenProps<RootScreens>) => {
-  const [title, setTitle] = useState('');
-  const [body, setBody] = useState('');
+  const [title, setTitle] = useState<string>('');
+  const [body, setBody] = useState<string>('');
 
-  const notesSelector = useSelector(createNotesSelector);
   const dispatch = useDispatch<AppDispatch>();
 
-  const handlePress = useCallback(() => {
-    const inTitle = title.trim();
-    const inBody = body.trim();
-    if (inTitle.length < 1 || inBody.length < 1) return;
-    const newKey = notesSelector[notesSelector.length - 1].id++;
-    dispatch(insertNote({id: newKey, title: inTitle, body: inBody}));
-    ToastAndroid.show('Note added', 1000)
-  }, [notesSelector]);
+  const handlePress = () => {
+    console.log('save is pressed');
+    if (title.trim().length < 1 || body.trim().length < 1) {
+      console.log('data not valid');
+      return;
+    }
+    console.log('data is valid');
+    const note = {id: Date.now(), title, body};
+    dispatch(insertNote(note));
+    saveNoteFb(note);
+    console.log('note saved');
+    navigation.pop();
+  };
 
   useEffect(() => {
     navigation.setOptions({
@@ -34,11 +39,11 @@ const NotesScreen = ({navigation}: StackScreenProps<RootScreens>) => {
           size={25}
           color={'black'}
           style={{marginRight: 15}}
-          onPress={() => {}}
+          onPress={handlePress}
         />
       ),
     });
-  }, [navigation]);
+  }, [navigation, title, body]);
 
   return (
     <SafeAreaView style={styles.container}>

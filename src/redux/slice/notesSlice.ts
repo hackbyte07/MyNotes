@@ -1,6 +1,6 @@
 import {PayloadAction, createSlice} from '@reduxjs/toolkit';
+import {act} from 'react-test-renderer';
 import {number, string} from 'yup';
-
 
 type initialStateType = {
   id: number;
@@ -8,20 +8,16 @@ type initialStateType = {
   body: string;
 };
 
-const initialState: Array<initialStateType> = [
-  {
-    id: 0,
-    title: '',
-    body: '',
-  },
-];
+const initialState: Array<initialStateType> = [];
 
 const notesSlice = createSlice({
   name: 'notes',
   initialState,
   reducers: {
     insertNote: (state, action: PayloadAction<initialStateType>) => {
-      state.push(action.payload);
+      let array: Array<initialStateType> = [...state, action.payload];
+
+      return array
     },
     updateNote: (state, action: PayloadAction<initialStateType>) => {
       const index = state.indexOf(action.payload);
@@ -36,10 +32,7 @@ const notesSlice = createSlice({
   },
 });
 
+export type {initialStateType};
 
-export type {
-    initialStateType
-}
-
-export const notesReducer = notesSlice.reducer
+export const notesReducer = notesSlice.reducer;
 export const {insertNote, deleteNote, updateNote} = notesSlice.actions

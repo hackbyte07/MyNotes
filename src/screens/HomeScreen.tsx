@@ -1,38 +1,65 @@
-import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
-import React from 'react';
+import {FlatList, SafeAreaView, StyleSheet} from 'react-native';
+import React, {useEffect} from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {StackScreenProps} from '@react-navigation/stack';
 import {RootScreens} from '../navigation/RootNavigation';
 import Notes from '../components/Notes';
 import {useSelector} from 'react-redux';
-import {createNotesSelector} from '../redux/store/store';
-import {FlatList} from 'react-native-gesture-handler';
+
 import {initialStateType} from '../redux/slice/notesSlice';
-import {it} from '@jest/globals';
+import {FloatingAction} from 'react-native-floating-action';
+import {RootState} from '../redux/store/store';
+import {notesCollection} from '../firebase/firestore/notesDb';
 
 const HomeScreen = ({navigation}: StackScreenProps<RootScreens>) => {
-  const notesSelector: Array<initialStateType> =
-    useSelector(createNotesSelector);
+  const notesSelector: Array<initialStateType> = useSelector<RootState>(
+    state => {
+      console.log(Array.isArray(state.notes));
+      return state.notes;
+    },
+  ) as Array<initialStateType>;
+
+
+  useEffect(() => {
+    const subscriber = notesCollection.onSnapshot(documentSnapshot => {
+      
+    });
+
+    return () => subscriber();
+  }, []);
+
   return (
     <SafeAreaView style={styles.container}>
-      <Icon
-        name="add"
-        size={25}
-        color={'black'}
-        style={styles.addButton}
-        onPress={() => navigation.navigate('NotesScreen')}
-      />
       <FlatList
+        style={{flex: 1}}
+        contentContainerStyle={{
+          justifyContent: 'center',
+          alignItems: 'center',
+          marginVertical: 7.5,
+        }}
         data={notesSelector}
+        numColumns={2}
         keyExtractor={item => item.id.toString()}
         renderItem={item => (
           <Notes
-            id={item.item.id}
             title={item.item.title}
             body={item.item.body}
-            onPress={() => {}}
+            onPress={() => {
+              console.log(item.item.id);
+            }}
           />
         )}
+      />
+      <FloatingAction
+        overrideWithAction={true}
+        actions={[
+          {name: 'open', icon: <Icon name="add" size={25} color={'white'} />},
+        ]}
+        onPressItem={name => {
+          if (name === 'open') {
+            navigation.navigate('NotesScreen');
+          }
+        }}
       />
     </SafeAreaView>
   );
@@ -43,13 +70,5 @@ export default HomeScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  addButton: {
-    position: 'absolute',
-    bottom: 35,
-    right: 20,
-    padding: 15,
-    backgroundColor: '#008080',
-    borderRadius: 10,
   },
 });

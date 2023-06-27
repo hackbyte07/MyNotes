@@ -5,13 +5,13 @@ import {initialStateType} from '../redux/slice/notesSlice';
 const {height, width} = Dimensions.get('screen');
 
 type props = {
-  id: number;
   title: string;
   body: string;
   onPress: () => void;
 };
 
-const Notes: FC<props> = ({id, title, body, onPress}) => {
+const Notes: FC<props> = ({title, body, onPress}) => {
+  console.log(title + ' body is ' + body);
   return (
     <Pressable style={styles.container} onPress={onPress}>
       <Text style={styles.title}>{title}</Text>
@@ -28,9 +28,10 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: 'lightgray',
     borderRadius: 15,
-
+    marginHorizontal: 7.5,
+    marginVertical: 7.5,
     height: height / 6,
-    width: width / 3,
+    width: width / 2.5,
     justifyContent: 'center',
   },
   title: {

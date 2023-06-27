@@ -1,8 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {configureStore, createSelector} from '@reduxjs/toolkit';
+import {
+  combineReducers,
+  configureStore,
+  createSelector,
+} from '@reduxjs/toolkit';
 
-import { initialStateType, notesReducer } from '../slice/notesSlice';
-import {persistReducer} from 'redux-persist';
+import {initialStateType, notesReducer} from '../slice/notesSlice';
+import {FLUSH, PAUSE, PERSIST, PURGE, REGISTER, REHYDRATE, persistReducer} from 'redux-persist';
 import persistStore from 'redux-persist/es/persistStore';
 
 const persistConfig = {
@@ -10,22 +14,28 @@ const persistConfig = {
   storage: AsyncStorage,
 };
 
-const persistedNotesReducer = persistReducer(persistConfig, notesReducer);
+const rootReducer = combineReducers({notes: notesReducer});
+
+const persistedNotesReducer = persistReducer(persistConfig, rootReducer);
 
 const store = configureStore({
-  reducer: {
-    notesReducer: persistedNotesReducer,
-  },
+  reducer: persistedNotesReducer,
+  middleware: getDefaultMiddleware =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        // Ignore these action types
+
+        ignoredActionPaths: ['meta.arg', 'payload.timestamp'],
+        // Ignore these paths in the state
+        ignoredPaths: ['items.dates'],
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    }),
 });
 
 const persistor = persistStore(store);
 
-const createNotes: (state: RootState) => Array<initialStateType> = state =>
-state.notesReducer;
-
-const createNotesSelector = createSelector(createNotes, state => state)
-
-export {store, persistor, createNotesSelector};
+export {store, persistor};
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
