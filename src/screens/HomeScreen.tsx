@@ -19,11 +19,8 @@ const HomeScreen = ({navigation}: StackScreenProps<RootScreens>) => {
     },
   ) as Array<initialStateType>;
 
-
   useEffect(() => {
-    const subscriber = notesCollection.onSnapshot(documentSnapshot => {
-      
-    });
+    const subscriber = notesCollection.onSnapshot(documentSnapshot => {});
 
     return () => subscriber();
   }, []);
@@ -46,6 +43,7 @@ const HomeScreen = ({navigation}: StackScreenProps<RootScreens>) => {
             body={item.item.body}
             onPress={() => {
               console.log(item.item.id);
+              navigation.navigate('SavedNotesScreen', {note: item.item});
             }}
           />
         )}

@@ -8,12 +8,15 @@ import BottomTabBarScreen from './BottomBarNavigation';
 import LoginScreen from '../screens/auth/LoginScreen';
 import SignupScreen from '../screens/auth/SignupScreen';
 import NotesScreen from '../screens/NotesScreen';
+import SavedNotesScreen from '../screens/SavedNotesScreen';
+import {initialStateType} from '../redux/slice/notesSlice';
 
 type RootScreens = {
   LoginScreen: undefined;
   SignupScreen: undefined;
   BottomTabBarScreen: undefined;
   NotesScreen: undefined;
+  SavedNotesScreen: {note: initialStateType};
 };
 
 const Stack = createStackNavigator<RootScreens>();
@@ -56,6 +59,11 @@ const RootNavigation = () => {
                 component={NotesScreen}
                 options={{title: 'Notes'}}
               />
+              <Stack.Screen
+                name="SavedNotesScreen"
+                component={SavedNotesScreen}
+                options={{title: 'Notes'}}
+              />
             </Stack.Group>
           </Stack.Group>
         ) : (
@@ -70,6 +78,11 @@ const RootNavigation = () => {
               <Stack.Screen
                 name="NotesScreen"
                 component={NotesScreen}
+                options={{title: 'Notes'}}
+              />
+              <Stack.Screen
+                name="SavedNotesScreen"
+                component={SavedNotesScreen}
                 options={{title: 'Notes'}}
               />
             </Stack.Group>
